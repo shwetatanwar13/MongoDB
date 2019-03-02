@@ -1,0 +1,28 @@
+db.help()
+db.hostInfo()
+help
+#upsert
+db.new_collection.update({_id:5},{$set:{"key5":"cats"}},{upsert:true})
+db.new_collection.update({_id:2},{$set:{"key1":"cats"}})
+db.new_collection.insert(x)
+# find with projection
+db.new_collection.find({},{name:1})
+
+db.cityinfo.aggregate( [{ $group: { _id: "$state", totalPop: { $sum: "$pop" } } },{ $match: { totalPop: { $gte: 10000000} } }] )
+
+db.cityinfo.aggregate( [{ $group: { _id: "$state", totalPop: { $sum: "$pop" } } },{ $match: { _id:"CA" } }] )
+
+db.cityinfo.aggregate( [{ $group: { _id: "$state", totalPop: { $sum: "$pop" } } }])
+
+db.cityinfo.aggregate( [{ $group: { _id: { state: "$state", city: "$city" }, pop: { $sum: "$pop" } } },{ $group: { _id: "$_id.state", avgCityPop: { $avg: "$pop" } } }] )
+
+db.cityinfo.aggregate( [{ $group: { _id: { state: "$state", city: "$city" }, pop: { $sum: "$pop" } } }])
+
+db.cityinfo.aggregate( [{ $group: { _id: { state: "$state", city: "$city" }, pop: { $sum: "$pop" } } },{ $sort: { pop: 1 } },{ $group:{_id : "$_id.state",biggestCity:  { $last: "$_id.city" },biggestPop:   { $last: "$pop" },smallestCity: { $first: "$_id.city" },smallestPop:  { $first: "$pop" }}}])
+
+
+
+db.cityinfo.aggregate( [  { $group: { _id: { state: "$state", city: "$city" },  pop: { $sum: "$pop" } }  }, { $sort:  {pop: -1}},    { $group: {_id: { state : "$_id.state"},  cities: { $push:{ city: "$_id.city"}}}}]).map( function(data) {data.cities= data.cities.slice(2, 3);  return {state: data._id.state, city: (data.cities.length> 0) ? data.cities[0].city : "no city   found" }});
+
+
+db.cityinfo.aggregate( [{ $group: { _id: { state: "$state", city: "$city" },pop: { $sum: "$pop" } } },{ $project: { _id : 1, pop : 1, state : { $let: {vars : { stateID: "$_id.state" },in: { $toUpper: "$$stateID" }} } }},{ $sort: { _id : 1 } },{ $out: "tmpcityinfo"} ])
