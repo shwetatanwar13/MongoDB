@@ -1,0 +1,81 @@
+mongoimport --db usdata --collection cityinfo --type json --file "C:\github code\MongoDB\zips.json"
+
+C:\Program Files\MongoDB\Server\4.0\bin>mongoimport --db usdata --collection cityinfo --type json --file "C:\github code\MongoDB\zips.json"
+2019-02-16T11:43:22.164-0800    connected to: localhost
+2019-02-16T11:43:22.917-0800    imported 29353 documents
+
+document = ( { "Type" : "Book", "Title" : "Definitive Guide to MongoDB, the", "ISBN" : "987-1-4302-3051-9", "Publisher" : "Apress", "Author": [ "Membrey, Peter", "Plugge, Eelco", "Hawkins, Tim" ] } ) 
+
+db.media.insert( { "Type" : "CD", "Artist" : "Nirvana", "Title" : "Nevermind" })
+
+db.media.insert( { "Type" : "CD",
+"Artist" : "Nirvana", 
+"Title" : "Nevermind", 
+"Tracklist" : [ 
+ { 
+ "Track" : "1", 
+ "Title" : "Smells like teen spirit", 
+ "Length" : "5:02" 
+ }, 
+ { 
+ "Track" : "2", 
+"Title" : "In Bloom", 
+ "Length" : "4:15" 
+}
+ ] 
+} 
+) 
+
+db.media.find()
+db['media'].find()
+
+db.media.find({Artist:"Nirvana"})
+*********************************************
+
+var doc1 =  { "_id" : "01test", "city" : "TestCity", "loc" : [ -72.679921, 42.264319 ], "pop" : 16864, "state" : "MA" }
+db.cityinfo.insert(doc1)
+db.cityinfo.find({"_id" : "01test"})
+
+
+db.cityinfo.update( { _id : "01test" } , {"city" : "TestCityUpdated"})
+db.cityinfo.find({"_id" : "01test"})
+db.cityinfo.update( { _id : "01test" } , {"city" : "TestCityUpdatedTwice","pop" : 1000})
+
+db.cityinfo.update( { _id : "01test" } , {"city" : "TestCityUpdatedTwice","pop" : 1000})
+
+var doc1 =  { "_id" : "02test", "city" : "TestCity2", "loc" : [ -72.679921, 42.264319 ], "pop" : 3333, "state" : "MA" }
+db.cityinfo.insert(doc1)
+db.cityinfo.find({"_id" : "02test"})
+
+db.cityinfo.update( { _id : "01test" } , {"country":"USA"})
+
+db.cityinfo.update( { _id : "03test" } , {"state":"MA"},{upsert:true})
+db.cityinfo.find({"_id" : "03test"})
+
+db.cityinfo.update( { _id : "03test" } , { $set:  { "pop" : 1333} } )
+db.cityinfo.update( { _id : "03test" } , { $set:  { "loc" : [ -72.679921, 42.264319 ]} } )
+
+mongoimport --db usdata --collection cityinfo --type json –file C:\github code\MongoDB\zips.json
+
+filterdata=db.cityinfo.find({ $and: [{ state: { $in: ["AK", "CA", "HI", "OR", "WA"]} }, { pop: { $gt: 25000, $lt: 150000 }}]})
+
+filterdata.aggregate( [{ $group: { _id: "$city", totalPop: { $sum: "$pop" } } },{ $match:  [{ state: { $in: ["AK", "CA", "HI", "OR", "WA"]} }, { totalPop: { $gt: 25000, $lt: 150000 }}]])
+
+filterdata=db.cityinfo.find({ $and: [{ state:"CA"}, { pop: { $gt: 10000, $lt: 20000 }}]})
+
+db.cityinfo.find({ $and: [{ state:"CA"}, { pop: { $gt: 10000, $lt: 20000 }}]}).count()
+
+#implicit and doesnt work for diferent fields
+db.cityinfo.find({{ state:"CA"}, { pop: { $gt: 10000, $lt: 20000 }}},{_id:0,loc:0})
+
+db.cityinfo.find({{ state:"CA"}, { pop: { $gt: 10000, $lt: 20000 }}},{_id:0,loc:0})
+
+db.cityinfo.find({ $and: [{ state:"CA"}, { pop: { $gt: 10000, $lt: 20000 }}]},{_id:0,loc:0})
+
+
+db.cityinfo.find({ $and: [{ state:"CA"}, { pop: { $gt: 10000, $lt: 20000 }}]},{_id:0,loc:0,state:1})
+Error: error: {
+        "ok" : 0,
+        "errmsg" : "Projection cannot have a mix of inclusion and exclusion.",
+        "code" : 2,
+        "codeName" : "BadValue"
