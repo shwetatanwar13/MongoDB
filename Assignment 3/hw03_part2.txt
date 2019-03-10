@@ -1,0 +1,17 @@
+Part2
+
+a) db.airports.find({loc :{$near:{$geometry:{type:"Point",coordinates:[-121.974648,37.381222]},$maxDistance:482803}}},{ name : 1, code : 1 , _id : 0 }) 
+
+b) db.airports.find({loc :{$near:{$geometry:{type:"Point",coordinates:[-121.997200,37.353020]},$maxDistance:804672}}},{ name : 1, code : 1 , _id : 0 })
+
+
+c) db.starbucks.aggregate([
+    { "$geoNear": {
+        "near": {
+            "type": "Point",
+            "coordinates": [-121.976643,37.379905]
+        }, 
+        "distanceField": "distance",
+        "distanceMultiplier": 0.000621371
+    }},{$group:{_id:{},avgDistance:{$avg:"$distance"}}}
+])
